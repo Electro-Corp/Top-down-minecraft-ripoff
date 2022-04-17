@@ -2,11 +2,12 @@ import pygame
 import random
 import block as b
 import math
+import saveload
 pygame.init()
-music = 'sweeden.mp3'
+music = 'c418.mp3'
 pygame.mixer.init()
-#pygame.mixer.music.load(music)
-#pygame.mixer.music.play(-1)
+pygame.mixer.music.load(music)
+pygame.mixer.music.play(-1)
 (width, height) = (480, 360)
 background_colour = (0,0,255)
 pygame.display.set_caption('MC RIPOFF Alpha 0.1')
@@ -37,7 +38,9 @@ for i in range(amount):
 img = pygame.image.load('mc.png')
 imgx = 50
 imgy = 230
+savefile = "save1.mcsave"
 currentblockcolor = "stone"
+currentstatus = ""
 while running:
   #print("Zoom: "+str(zoom),end='\r')
   pygame.display.flip()
@@ -55,9 +58,15 @@ while running:
   text = "FPS: " + str(clock.get_fps()) #get fps
   textsurface = myfont.render(text, False, (0, 20, 0))
   screen.blit(textsurface, (0, 0))
-  text = "BLOCK: " + str(currentblockcolor) #get fps
+  text = "BLOCK: " + str(currentblockcolor) #get block
   textsurface = myfont.render(text, False, (0, 20, 0))
-  screen.blit(textsurface, (0, 30))
+  screen.blit(textsurface, (0, 20))
+  text = "CURRENT SAVE FILE: " + str(savefile) #get savefile
+  textsurface = myfont.render(text, False, (0, 20, 0))
+  screen.blit(textsurface, (0, 40))
+  text = "CURRENT SAVE FILE: " + str(savefile) #get savefile
+  textsurface = myfont.render(currentstatus, False, (0, 20, 0))
+  screen.blit(textsurface, (0, height-20))
   
   #screen.blit(img, (imgx, imgy))
   if keys[pygame.K_UP]:
@@ -73,13 +82,30 @@ while running:
     currentblockcolor = "stone"
   if keys[pygame.K_2]:
     currentblockcolor = "dirt"
+  if keys[pygame.K_9]:
+    textsurface = myfont.render("Saving...", False, (0, 20, 0))
+    screen.blit(textsurface, (0, height-20))
+    saveload.save("save1.mcsave",blocks)
+    currentstatus = "Saved..."
+  if keys[pygame.K_8]:
+    textsurface = myfont.render("Loading..", False, (0, 20, 0))
+    screen.blit(textsurface, (0, height-20))
+    blocks = saveload.read("save1.mcsave")
+    currentstatus = "Loaded..."
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       running = False
-    if event.type == pygame.MOUSEBUTTONUP:
-      for block in blocks:  
-        if math.sqrt((((block.x+scx)-mouseX)*((block.x+scx)-mouseX))+((((block.y+scy)-mouseY)*((block.y+scy)-mouseY)))) < 10:
-          block.changecolor(currentblockcolor)
+    # if event.type == pygame.MOUSEBUTTONUP:
+    #   for block in blocks:  
+    #     if math.sqrt((((block.x+scx)-mouseX)*((block.x+scx)-mouseX))+((((block.y+scy)-mouseY)*((block.y+scy)-mouseY)))) < 10:
+    #       block.changecolor(currentblockcolor)
+    if pygame.mouse.get_pressed()[0]:
+            try:
+              for block in blocks:  
+                if math.sqrt((((block.x+scx)-mouseX)*((block.x+scx)-mouseX))+((((block.y+scy)-mouseY)*((block.y+scy)-mouseY)))) < 10:
+                  block.changecolor(currentblockcolor)
+            except AttributeError:
+                pass
       
     
 

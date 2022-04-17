@@ -2,7 +2,6 @@ types = {
   "stone": (153, 151, 142),
   "dirt": (74, 42, 37)
 }
-
 class block:
   def __init__(self,x,y,color):
     self.x = x
@@ -13,7 +12,7 @@ class block:
     try: 
       self.color = types[type]
       self.prevcolor = self.color
-      print("Color changed")
+      
     except KeyError:
       return 0
   
