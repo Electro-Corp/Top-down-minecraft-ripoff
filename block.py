@@ -1,6 +1,7 @@
 types = {
   "stone": (153, 151, 142),
-  "dirt": (74, 42, 37)
+  "dirt": (74, 42, 37),
+  "red wool": (240,34,20)
 }
 class block:
   def __init__(self,x,y,color):

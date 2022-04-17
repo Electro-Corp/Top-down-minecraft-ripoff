@@ -8,7 +8,7 @@ music = 'c418.mp3'
 pygame.mixer.init()
 pygame.mixer.music.load(music)
 pygame.mixer.music.play(-1)
-(width, height) = (480, 360)
+(width, height) = (500, 300)
 background_colour = (0,0,255)
 pygame.display.set_caption('MC RIPOFF Alpha 0.1')
 clock = pygame.time.Clock()
@@ -67,7 +67,7 @@ while running:
   text = "CURRENT SAVE FILE: " + str(savefile) #get savefile
   textsurface = myfont.render(currentstatus, False, (0, 20, 0))
   screen.blit(textsurface, (0, height-20))
-  
+  """Image"""
   #screen.blit(img, (imgx, imgy))
   if keys[pygame.K_UP]:
       scy += 10
@@ -82,6 +82,9 @@ while running:
     currentblockcolor = "stone"
   if keys[pygame.K_2]:
     currentblockcolor = "dirt"
+  if keys[pygame.K_3]:
+    currentblockcolor = "red wool"
+  """SAVE/LOAD"""
   if keys[pygame.K_9]:
     
     textsurface = myfont.render("Saving...", False, (0, 20, 0))
