@@ -83,14 +83,17 @@ while running:
   if keys[pygame.K_2]:
     currentblockcolor = "dirt"
   if keys[pygame.K_9]:
+    
     textsurface = myfont.render("Saving...", False, (0, 20, 0))
     screen.blit(textsurface, (0, height-20))
-    saveload.save("save1.mcsave",blocks)
+    savefile = input("Save file: ")
+    saveload.save(savefile,blocks)
     currentstatus = "Saved..."
   if keys[pygame.K_8]:
     textsurface = myfont.render("Loading..", False, (0, 20, 0))
     screen.blit(textsurface, (0, height-20))
-    blocks = saveload.read("save1.mcsave")
+    savefile = input("Load: ")
+    blocks = saveload.read(savefile)
     currentstatus = "Loaded..."
   for event in pygame.event.get():
     if event.type == pygame.QUIT:

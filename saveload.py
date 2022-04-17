@@ -45,7 +45,7 @@ def read(file):
           a+=3
         else:
           break
-        print(a)
+        
       return blocks
   except KeyError:
     print("an execption occure")
