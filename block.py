@@ -13,7 +13,7 @@ class block:
     try: 
       self.color = types[type]
       self.prevcolor = self.color
-      
     except KeyError:
       return 0
+  
   
