@@ -3,7 +3,7 @@ import random
 import block as b
 import math
 import saveload
-
+s = None
 pygame.init()
 music = 'c418.mp3'
 pygame.mixer.init()
@@ -42,6 +42,56 @@ imgy = 230
 savefile = "save1.mcsave"
 currentblockcolor = "stone"
 currentstatus = ""
+""" SERVER CLIENT STUFF """
+def connect():
+	global s
+	import socket
+	HOST = str(input("Connect to: "))
+	if HOST == "0":
+		HOST = "192.168.86.35"
+	PORT = int(input("Port: "))
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((HOST, PORT))
+def sendblocks(blocks):
+		global s
+		data = bytearray([0xAA] * 30000)
+		
+		i = 0
+		
+		for block in blocks:
+			data[i] = 0xDA
+			i += 1
+			data[i] = 0xFA
+			i += 1
+			print(block.x)
+			if(block.x < 256):
+				data[i] = block.x
+			else:
+				data[i] = 0xAA
+			i += 1
+			data[i] = 0xFB
+			i += 1
+			if(block.y < 256):
+				data[i] = block.y
+			else:
+				data[i] = 0xAA
+			i += 1
+			data[i] = 0xFC
+			i += 1
+			data[i] = block.color[0]
+			i += 1
+			data[i] = 0xFD
+			i += 1
+			data[i] = block.color[1]
+			i += 1
+			data[i] = 0xFF
+			i += 1
+			data[i] = block.color[2]
+			i += 1
+			data[i] = 0xDB
+			i += 1
+		
+			s.sendall(data)	
 while running:
 
     #print("Zoom: "+str(zoom),end='\r')
@@ -49,6 +99,59 @@ while running:
     screen.fill(background_colour)
     (mouseX, mouseY) = pygame.mouse.get_pos()
     blocksren = 0
+    if(s):
+    	blockdata = s.recv(30000)
+    	
+    	inblock = False
+    	if(blockdata):
+    		#print("data recived. parsing!")
+    		blocks = []
+	    	x = 0
+	    	y = 0
+	    	color = [0,0,0]
+	    	for i in range(len(blockdata)):
+	    		if(blockdata[i] == 0xCA):
+	    			sendblocks(blocks)
+	    			break
+	    		if(blockdata[i] != 0xAA):
+	    			if(not inblock):
+	    				pass
+		    			#print(f"Not inside block. weird. im at: {i} and am reading data {blockdata[i]}")
+		    		"""
+		    		0xFA = X data
+		    		0xFB = Y data
+		    		0xFC = color(1)
+		    		0xFD = color(2)
+		    		0xFF = color(3)
+		    		"""
+		    		if(blockdata[i] == 0xda):
+		    			inblock = True
+		    			#print("block!")
+			    		
+	    			#print(f"Inside block rn, i is {i}")
+		    		if(blockdata[i] == 0xfa):
+		    			i += 1
+		    			x = blockdata[i]
+		    		if(blockdata[i] == 0xfb):
+		    			i += 1
+		    			y = blockdata[i]
+		    		if(blockdata[i] == 0xfc):
+		    			i += 1
+		    			color[0] = blockdata[i]
+		    		if(blockdata[i] == 0xfd):
+		    			i += 1
+		    			color[1] = blockdata[i]
+		    		if(blockdata[i] == 0xff):
+		    			i += 1
+		    			color[2] = blockdata[i]
+			    	if(blockdata[i] == 0xdb):
+			    		inblock = False
+			    		currentbloc = b.block(x, y, tuple(color))
+			    		print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
+			    		blocks.append(currentbloc)
+	    	#print(blockdata)
+	    	#print(blocks)
+    #print(f"Current ammount of blocks: {len(blocks)}")
     for block in blocks:
         newx = (block.x + scx)
         newy = (block.y + scy)
@@ -88,6 +191,9 @@ while running:
         blocksren)  #get how many blocks are currently rendered
     textsurface = myfont.render(text, False, (0, 20, 0))
     screen.blit(textsurface, (0, 60))
+    text = "BLOCKS TOTAL: " + str(len(blocks))  #get how many blocks are currently rendered
+    textsurface = myfont.render(text, False, (0, 20, 0))
+    screen.blit(textsurface, (0, 80))
     text = "CURRENT SAVE FILE: " + str(savefile)  #get savefile
     textsurface = myfont.render(currentstatus, False, (0, 20, 0))
     screen.blit(textsurface, (0, height - 20))
@@ -108,6 +214,8 @@ while running:
         currentblockcolor = "dirt"
     if keys[pygame.K_3]:
         currentblockcolor = "red wool"
+    if keys[pygame.K_c]:
+    	connect()
     """SAVE/LOAD"""
     if keys[pygame.K_9]:
 
@@ -122,6 +230,7 @@ while running:
         savefile = input("Load: ")
         blocks = saveload.read(savefile)
         currentstatus = "Loaded..."
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -137,5 +246,8 @@ while running:
                                  ((((block.y + scy) - mouseY) *
                                    ((block.y + scy) - mouseY)))) < 10:
                         block.changecolor(currentblockcolor)
+                        
             except AttributeError:
                 pass
+        	
+   
