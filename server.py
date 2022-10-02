@@ -8,7 +8,7 @@ HOST = ''
 PORT = int(sys.argv[1])
 """ map data """
 blocks = []
-amount = 1000
+amount = 30000
 x = 0
 y = 0
 zoom = 50.0
@@ -31,7 +31,7 @@ def parseblocks(conn):
 	#global blocks
 	inblock = False
 	if(blockdata):
-		print("data recived. parsing!")
+		#print("data recived. parsing!")
 		blocks = []
 		x = 0
 		y = 0
@@ -50,7 +50,7 @@ def parseblocks(conn):
 		    		"""
 				if(blockdata[i] == 0xda):
 					inblock = True
-					print("block!")
+					#print("block!")
 					
 				#print(f"Inside block rn, i is {i}")
 				try:
@@ -80,11 +80,11 @@ def parseblocks(conn):
 	i = 0
 	_b = []
 	for block in blocks:
-		
 		if(block == prevblock[i]):
 			_b.append(prevblock[i])
 		else:
 			_b.append(block)
+	blocks = []	
 	blocks = _b
 	return blocks
 def sendblocks(blocks):
@@ -123,7 +123,7 @@ def sendblocks(blocks):
 				data[i] = 0xDB
 				i += 1
 		for i in range(len(connections)):
-			print(f"Sending data to {i}")
+			#print(f"Sending data to {i}")
 			connections[i].sendall(data)
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	print("Server started...")
@@ -155,17 +155,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		blocks = parseblocks(connections[0])
 	"""
 	while True:
-		e.write(f"[LOOP {pc}]\n")
-		e.write("Sending blocks\n")
-		sendblocks(blocks)
-		e.write("Sending read request to connection (0)\n")
+		#e.write(f"[LOOP {pc}]\n")
+		#e.write("Sending read request to connection (0)\n")
 		connections[0].sendall(bytearray([0xCA]))
-		e.write("Reciving data\n")
+		#e.write("Reciving data\n")
 		blocks = parseblocks(connections[0])
-		e.write("Sending read request to connection (1)\n")
+		sendblocks(blocks)
+		#e.write("Sending read request to connection (1)\n")
 		connections[1].sendall(bytearray([0xCA]))
-		e.write("Reciving data (1)\n")
+		#e.write("Reciving data (1)\n")
 		blocks = parseblocks(connections[1])
+		#e.write("Sending blocks\n")
+		sendblocks(blocks)
 		pc +=1
 		    	
 				

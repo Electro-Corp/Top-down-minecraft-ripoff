@@ -154,14 +154,14 @@ while running:
 			    	if(blockdata[i] == 0xdb):
 			    		inblock = False
 			    		currentbloc = b.block(x, y, tuple(color))
-			    		print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
+			    		#print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
 			    		_b.append(currentbloc)
            
 	    	#print(blockdata)
 	    	#print(blocks)
-	    	if(len(_b) > 0):
+	    	if(len(_b) > 100):
 	    	    blocks = _b
-    print(f"Current ammount of blocks: {len(blocks)}")
+   # print(f"Current ammount of blocks: {len(blocks)}")
     for block in blocks:
         newx = (block.x + scx)
         newy = (block.y + scy)
