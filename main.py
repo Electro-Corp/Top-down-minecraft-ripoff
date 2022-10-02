@@ -106,66 +106,61 @@ while running:
     (mouseX, mouseY) = pygame.mouse.get_pos()
     blocksren = 0
     if(s):
-    	blockdata = s.recv(30000)
-    	
-    	inblock = False
-    	if(blockdata):
-    		#print("data recived. parsing!")
-    		_b = []
-	    	x = 0
-	    	y = 0
-	    	color = [0,0,0]
-	    	for i in range(len(blockdata)):
-	    		if(blockdata[i] == 0xCA):
-	    			sendblocks()
-	    			break
-	    		if(blockdata[i] != 0xAA):
-	    			if(not inblock):
-	    				pass
-		    			#print(f"Not inside block. weird. im at: {i} and am reading data {blockdata[i]}")
-		    		"""
-		    		0xFA = X data
-		    		0xFB = Y data
-		    		0xFC = color(1)
-		    		0xFD = color(2)
-		    		0xFF = color(3)
-		    		"""
-		    		try:
-			    		if(blockdata[i] == 0xda):
-						
-			    			inblock = True
-		    			#print("block!")
-			    		
-	    			#print(f"Inside block rn, i is {i}")
-	    			
-			    		if(blockdata[i] == 0xfa):
-			    			i += 1
-			    			x = blockdata[i]
-			    		if(blockdata[i] == 0xfb):
-			    			i += 1
-			    			y = blockdata[i]
-			    		if(blockdata[i] == 0xfc):
-			    			i += 1
-			    			color[0] = blockdata[i]
+                blockdata = s.recv(30000)
 
-			    		if(blockdata[i] == 0xfd):
-			    			i += 1
-			    			color[1] = blockdata[i]
-			    		if(blockdata[i] == 0xff):
-			    			i += 1
-			    			color[2] = blockdata[i]
-			    	except: 
-			    		pass
-			    	if(blockdata[i] == 0xdb):
-			    		inblock = False
-			    		currentbloc = b.block(x, y, tuple(color))
-			    		#print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
-			    		_b.append(currentbloc)
-           
-	    	#print(blockdata)
-	    	#print(blocks)
-	    	if(len(_b) > 100):
-	    	    blocks = _b
+                inblock = False
+                if(blockdata):
+                #print("data recived. parsing!")
+                    _b = []
+                    x = 0
+                    y = 0
+                    color = [0,0,0]
+                    for i in range(len(blockdata)):
+                        if(blockdata[i] == 0xCA):
+                            sendblocks()
+                            break
+                        if(blockdata[i] != 0xAA):
+                            if(not inblock):
+                                pass
+                            #print(f"Not inside block. weird. im at: {i} and am reading data {blockdata[i]}")
+                            """
+                            0xFA = X data
+                            0xFB = Y data
+                            0xFC = color(1)
+                            0xFD = color(2)
+                            0xFF = color(3)
+                            """
+                            try:
+                                if(blockdata[i] == 0xda):
+                                
+                                    inblock = True	    			
+                                if(blockdata[i] == 0xfa):
+                                    i += 1
+                                    x = blockdata[i]
+                                if(blockdata[i] == 0xfb):
+                                    i += 1
+                                    y = blockdata[i]
+                                if(blockdata[i] == 0xfc):
+                                    i += 1
+                                    color[0] = blockdata[i]
+
+                                if(blockdata[i] == 0xfd):
+                                    i += 1
+                                    color[1] = blockdata[i]
+                                if(blockdata[i] == 0xff):
+                                    i += 1
+                                    color[2] = blockdata[i]
+
+                                if(blockdata[i] == 0xdb):
+                                    inblock = False
+                                    currentbloc = b.block(x, y, tuple(color))
+                                    #print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
+                                    _b.append(currentbloc)
+                            except:
+                                pass
+
+                    if(len(_b) > 100):
+                        blocks = _b
    # print(f"Current ammount of blocks: {len(blocks)}")
     for block in blocks:
         newx = (block.x + scx)
