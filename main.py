@@ -130,13 +130,14 @@ while running:
 		    		0xFD = color(2)
 		    		0xFF = color(3)
 		    		"""
-		    		if(blockdata[i] == 0xda):
-					
-		    			inblock = True
+		    		try:
+			    		if(blockdata[i] == 0xda):
+						
+			    			inblock = True
 		    			#print("block!")
 			    		
 	    			#print(f"Inside block rn, i is {i}")
-	    			try:
+	    			
 			    		if(blockdata[i] == 0xfa):
 			    			i += 1
 			    			x = blockdata[i]
