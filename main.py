@@ -136,21 +136,25 @@ while running:
 		    			#print("block!")
 			    		
 	    			#print(f"Inside block rn, i is {i}")
-		    		if(blockdata[i] == 0xfa):
-		    			i += 1
-		    			x = blockdata[i]
-		    		if(blockdata[i] == 0xfb):
-		    			i += 1
-		    			y = blockdata[i]
-		    		if(blockdata[i] == 0xfc):
-		    			i += 1
-		    			color[0] = blockdata[i]
-		    		if(blockdata[i] == 0xfd):
-		    			i += 1
-		    			color[1] = blockdata[i]
-		    		if(blockdata[i] == 0xff):
-		    			i += 1
-		    			color[2] = blockdata[i]
+	    			try:
+			    		if(blockdata[i] == 0xfa):
+			    			i += 1
+			    			x = blockdata[i]
+			    		if(blockdata[i] == 0xfb):
+			    			i += 1
+			    			y = blockdata[i]
+			    		if(blockdata[i] == 0xfc):
+			    			i += 1
+			    			color[0] = blockdata[i]
+
+			    		if(blockdata[i] == 0xfd):
+			    			i += 1
+			    			color[1] = blockdata[i]
+			    		if(blockdata[i] == 0xff):
+			    			i += 1
+			    			color[2] = blockdata[i]
+			    	except: 
+			    		pass
 			    	if(blockdata[i] == 0xdb):
 			    		inblock = False
 			    		currentbloc = b.block(x, y, tuple(color))
