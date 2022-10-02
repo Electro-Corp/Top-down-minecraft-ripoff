@@ -48,50 +48,56 @@ def connect():
 	import socket
 	HOST = str(input("Connect to: "))
 	if HOST == "0":
-		HOST = "192.168.86.35"
+		HOST = "192.168.86.31"
 	PORT = int(input("Port: "))
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.connect((HOST, PORT))
-def sendblocks(blocks):
+	try:
+		s.connect((HOST, PORT))
+	except ConnectionRefusedError:
+		print("Error, server refused. Check IP and port!")
+		s = None
+def sendblocks():
+		global blocks
 		global s
 		data = bytearray([0xAA] * 30000)
 		
 		i = 0
 		
 		for block in blocks:
-			data[i] = 0xDA
-			i += 1
-			data[i] = 0xFA
-			i += 1
-			print(block.x)
-			if(block.x < 256):
-				data[i] = block.x
-			else:
-				data[i] = 0xAA
-			i += 1
-			data[i] = 0xFB
-			i += 1
-			if(block.y < 256):
-				data[i] = block.y
-			else:
-				data[i] = 0xAA
-			i += 1
-			data[i] = 0xFC
-			i += 1
-			data[i] = block.color[0]
-			i += 1
-			data[i] = 0xFD
-			i += 1
-			data[i] = block.color[1]
-			i += 1
-			data[i] = 0xFF
-			i += 1
-			data[i] = block.color[2]
-			i += 1
-			data[i] = 0xDB
-			i += 1
+			if(i < len(data)):
+				data[i] = 0xDA
+				i += 1
+				data[i] = 0xFA
+				i += 1
+				#print(block.x)
+				if(block.x < 256):
+					data[i] = block.x
+				else:
+					data[i] = 0xAA
+				i += 1
+				data[i] = 0xFB
+				i += 1
+				if(block.y < 256):
+					data[i] = block.y
+				else:
+					data[i] = 0xAA
+				i += 1
+				data[i] = 0xFC
+				i += 1
+				data[i] = block.color[0]
+				i += 1
+				data[i] = 0xFD
+				i += 1
+				data[i] = block.color[1]
+				i += 1
+				data[i] = 0xFF
+				i += 1
+				data[i] = block.color[2]
+				i += 1
+				data[i] = 0xDB
+				i += 1
 		
-			s.sendall(data)	
+		s.sendall(data)	
 while running:
 
     #print("Zoom: "+str(zoom),end='\r')
@@ -105,13 +111,13 @@ while running:
     	inblock = False
     	if(blockdata):
     		#print("data recived. parsing!")
-    		blocks = []
+    		_b = []
 	    	x = 0
 	    	y = 0
 	    	color = [0,0,0]
 	    	for i in range(len(blockdata)):
 	    		if(blockdata[i] == 0xCA):
-	    			sendblocks(blocks)
+	    			sendblocks()
 	    			break
 	    		if(blockdata[i] != 0xAA):
 	    			if(not inblock):
@@ -125,6 +131,7 @@ while running:
 		    		0xFF = color(3)
 		    		"""
 		    		if(blockdata[i] == 0xda):
+					
 		    			inblock = True
 		    			#print("block!")
 			    		
@@ -148,10 +155,13 @@ while running:
 			    		inblock = False
 			    		currentbloc = b.block(x, y, tuple(color))
 			    		print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
-			    		blocks.append(currentbloc)
+			    		_b.append(currentbloc)
+           
 	    	#print(blockdata)
 	    	#print(blocks)
-    #print(f"Current ammount of blocks: {len(blocks)}")
+	    	if(len(_b) > 0):
+	    	    blocks = _b
+    print(f"Current ammount of blocks: {len(blocks)}")
     for block in blocks:
         newx = (block.x + scx)
         newy = (block.y + scy)

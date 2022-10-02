@@ -26,6 +26,7 @@ for i in range(amount):
     blocks.append(currentbloc)
 def parseblocks(conn):
 	global blocks
+	prevblock = blocks
 	blockdata = conn.recv(30000)
 	#global blocks
 	inblock = False
@@ -38,7 +39,8 @@ def parseblocks(conn):
 		for i in range(len(blockdata)):
 			if(blockdata[i] != 0xAA):
 				if(not inblock):
-		    			print(f"Not inside block. weird. im at: {i} and am reading data {blockdata[i]}")
+					pass
+		    			#print(f"Not inside block. weird. im at: {i} and am reading data {blockdata[i]}")
 				"""
 		    		0xFA = X data
 		    		0xFB = Y data
@@ -48,7 +50,7 @@ def parseblocks(conn):
 		    		"""
 				if(blockdata[i] == 0xda):
 					inblock = True
-					#print("block!")
+					print("block!")
 					
 				#print(f"Inside block rn, i is {i}")
 				try:
@@ -75,41 +77,51 @@ def parseblocks(conn):
 						blocks.append(currentbloc)
 				except:
 					pass
+	i = 0
+	_b = []
+	for block in blocks:
+		
+		if(block == prevblock[i]):
+			_b.append(prevblock[i])
+		else:
+			_b.append(block)
+	blocks = _b
 	return blocks
 def sendblocks(blocks):
 		data = bytearray([0xAA] * 30000)
 		i = 0
 		for block in blocks:
-			data[i] = 0xDA
-			i += 1
-			data[i] = 0xFA
-			i += 1
-			if(block.x < 256):
-				data[i] = block.x
-			else:
-				data[i] = 0xAA
-			i += 1
-			data[i] = 0xFB
-			i += 1
-			if(block.y < 256):
-				data[i] = block.y
-			else:
-				data[i] = 0xAA
-			i += 1
-			data[i] = 0xFC
-			i += 1
-			data[i] = block.color[0]
-			i += 1
-			data[i] = 0xFD
-			i += 1
-			data[i] = block.color[1]
-			i += 1
-			data[i] = 0xFF
-			i += 1
-			data[i] = block.color[2]
-			i += 1
-			data[i] = 0xDB
-			i += 1
+			if(i < len(data)):
+				data[i] = 0xDA
+				i += 1
+				data[i] = 0xFA
+				i += 1
+				if(block.x < 256):
+					data[i] = block.x
+				else:
+					data[i] = 0xAA
+				i += 1
+				data[i] = 0xFB
+				i += 1
+				if(block.y < 256):
+					data[i] = block.y
+				else:
+					data[i] = 0xAA
+				i += 1
+				data[i] = 0xFC
+				i += 1
+				data[i] = block.color[0]
+				i += 1
+				data[i] = 0xFD
+				i += 1
+				data[i] = block.color[1]
+				i += 1
+				data[i] = 0xFF
+				i += 1
+				data[i] = block.color[2]
+				i += 1
+				data[i] = 0xDB
+				i += 1
 		for i in range(len(connections)):
 			print(f"Sending data to {i}")
 			connections[i].sendall(data)
@@ -134,6 +146,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     	"""
 	e = open("log.txt","w")
 	pc = 0
+	sendblocks(blocks)
+	"""while True:
+		input("")
+		sendblocks(blocks)
+		connections[0].sendall(bytearray([0xCA]))
+		e.write("Reciving data\n")
+		blocks = parseblocks(connections[0])
+	"""
 	while True:
 		e.write(f"[LOOP {pc}]\n")
 		e.write("Sending blocks\n")
