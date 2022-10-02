@@ -35,6 +35,9 @@ def parseblocks(conn):
 		blocks = []
 		x = 0
 		y = 0
+		prevx = x
+		prevy = y
+		prevcolor = [0,0,0]
 		color = [0,0,0]
 		for i in range(len(blockdata)):
 			if(blockdata[i] != 0xAA):
@@ -73,16 +76,26 @@ def parseblocks(conn):
 					if(blockdata[i] == 0xdb):
 						inblock = False
 						currentbloc = b.block(x, y, tuple(color))
+						prevx = x
+						prevy = y
+						prevcolor = color
 						#print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
 						blocks.append(currentbloc)
 				except:
-					pass
+					currentbloc = b.block(prevx+10, prevy+10, tuple(prevcolor))
+					#print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
+					blocks.append(currentbloc)
 	i = 0
 	_b = []
+	previ = 0
 	for block in blocks:
-		if(block == prevblock[i]):
-			_b.append(prevblock[i])
-		else:
+		try:
+			if(block == prevblock[i]):
+				_b.append(prevblock[i])
+				previ = i
+			else:
+				_b.append(block)
+		except:
 			_b.append(block)
 	blocks = []	
 	blocks = _b
