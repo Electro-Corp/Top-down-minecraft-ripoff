@@ -82,9 +82,10 @@ def parseblocks(conn):
 						#print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
 						blocks.append(currentbloc)
 				except:
-					currentbloc = b.block(prevx+10, prevy+10, tuple(prevcolor))
+					pass
+					#currentbloc = b.block(prevx+10, prevy+10, tuple(prevcolor))
 					#print(f"Block recived, X: {x}, Y: {y}, Color: {color}")
-					blocks.append(currentbloc)
+					#blocks.append(currentbloc)
 	i = 0
 	_b = []
 	previ = 0
